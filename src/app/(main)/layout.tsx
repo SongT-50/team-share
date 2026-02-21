@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/features/layout/Sidebar';
+import { MobileHeader } from '@/components/features/layout/MobileHeader';
 import { MobileNav } from '@/components/features/layout/MobileNav';
 import { ToastProvider } from '@/components/ui/Toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -39,6 +40,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
         <main className="flex-1 pb-16 md:pb-0">
+          <MobileHeader />
           {children}
         </main>
         <MobileNav />

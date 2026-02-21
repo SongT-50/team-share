@@ -32,7 +32,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-[calc(100dvh-4rem)] md:h-screen flex flex-col">
+    <div className="h-[calc(100dvh-6.5rem)] md:h-screen flex flex-col">
       {/* Header */}
       <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold">💬 {currentTeam?.name} 채팅</h1>

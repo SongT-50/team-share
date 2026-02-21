@@ -77,14 +77,24 @@ export function useTeam() {
   // 팀 나가기
   const leaveTeamMutation = useMutation({
     mutationFn: async () => {
+      const leavingTeamId = currentTeam!.id;
       const newMemberIds = currentTeam!.memberIds.filter((id) => id !== user!.id);
-      return bkend.collection('teams').update(currentTeam!.id, {
+      await bkend.collection('teams').update(leavingTeamId, {
         memberIds: newMemberIds,
       });
+      return leavingTeamId;
     },
-    onSuccess: () => {
-      queryClient.clear();
-      router.push('/login');
+    onSuccess: (leavingTeamId) => {
+      const remainingTeams = teams.filter((t) => t.id !== leavingTeamId);
+      if (remainingTeams.length > 0) {
+        setSelectedTeamId(remainingTeams[0].id);
+        queryClient.invalidateQueries({ queryKey: ['teams'] });
+        queryClient.invalidateQueries({ queryKey: ['team-members'] });
+        router.push('/dashboard');
+      } else {
+        queryClient.clear();
+        router.push('/login');
+      }
     },
   });
 

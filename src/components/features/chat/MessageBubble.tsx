@@ -36,9 +36,9 @@ export function MessageBubble({
         {!isMine && <Avatar name={message.senderName} size="sm" />}
 
         <div className={`max-w-[70%] ${isMine ? 'items-end' : 'items-start'}`}>
-          {!isMine && (
-            <p className="text-xs text-gray-500 mb-1">{message.senderName}</p>
-          )}
+          <p className={`text-xs text-gray-500 mb-1 ${isMine ? 'text-right' : ''}`}>
+            {message.senderName}
+          </p>
 
           <div className="relative group">
             <div
@@ -122,7 +122,7 @@ export function MessageBubble({
               variant="danger"
               size="sm"
               onClick={() => {
-                onDelete(message._id);
+                onDelete(message.id);
                 setShowDeleteConfirm(false);
               }}
               isLoading={isDeleting}

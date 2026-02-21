@@ -14,11 +14,9 @@ export function useChat(teamId: string) {
   const loadMessages = useCallback(async () => {
     if (!teamId) return;
     try {
-      const data = (await bkend.collection('chat-messages').find({
-        teamId,
-        sort: 'createdAt',
-      })) as ChatMessage[];
-      setMessages(Array.isArray(data) ? data : []);
+      const data = (await bkend.collection('chat_messages').find({})) as ChatMessage[];
+      const all = Array.isArray(data) ? data : [];
+      setMessages(all.filter((m) => m.teamId === teamId));
       failCountRef.current = 0;
       setIsError(false);
     } catch {
@@ -41,14 +39,14 @@ export function useChat(teamId: string) {
     async (content: string, type: 'text' | 'image' | 'file' = 'text', fileUrl?: string) => {
       if (!user || (!content.trim() && type === 'text')) return null;
 
-      const message = (await bkend.collection('chat-messages').create({
+      const message = (await bkend.collection('chat_messages').create({
         teamId,
-        senderId: user._id,
+        senderId: user.id,
         senderName: user.name,
         content: content.trim(),
         type,
         fileUrl,
-        readBy: [user._id],
+        readBy: [user.id],
       })) as ChatMessage;
 
       setMessages((prev) => [...prev, message]);
@@ -71,9 +69,9 @@ export function useChat(teamId: string) {
       setIsDeleting(true);
       // Optimistic: remove locally first
       const prev = messages;
-      setMessages((m) => m.filter((msg) => msg._id !== messageId));
+      setMessages((m) => m.filter((msg) => msg.id !== messageId));
       try {
-        await bkend.collection('chat-messages').delete(messageId);
+        await bkend.collection('chat_messages').delete(messageId);
       } catch {
         // Rollback on failure
         setMessages(prev);
@@ -88,20 +86,20 @@ export function useChat(teamId: string) {
   const markAsRead = useCallback(async () => {
     if (!user || !messages.length) return;
     const unread = messages.filter(
-      (msg) => !msg.readBy.includes(user._id)
+      (msg) => !msg.readBy.includes(user.id)
     );
     // Update each unread message — fire and forget
     await Promise.allSettled(
       unread.map((msg) =>
-        bkend.collection('chat-messages').update(msg._id, {
-          readBy: [...msg.readBy, user._id],
+        bkend.collection('chat_messages').update(msg.id, {
+          readBy: [...msg.readBy, user.id],
         })
       )
     );
   }, [messages, user]);
 
   const unreadCount = user
-    ? messages.filter((msg) => !msg.readBy.includes(user._id)).length
+    ? messages.filter((msg) => !msg.readBy.includes(user.id)).length
     : 0;
 
   return {

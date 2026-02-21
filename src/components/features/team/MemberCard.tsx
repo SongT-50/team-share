@@ -37,7 +37,7 @@ export function MemberCard({ member, isCurrentUser, canManage, onRemove }: Membe
           variant="ghost"
           size="sm"
           className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0"
-          onClick={() => onRemove(member._id)}
+          onClick={() => onRemove(member.id)}
         >
           추방
         </Button>

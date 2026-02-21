@@ -44,7 +44,7 @@ export function ActionList({ actions, isLoading, members, onSelect, onStatusChan
 
   const getMemberName = (assigneeId?: string) => {
     if (!assigneeId) return '미배정';
-    const member = members.find((m) => m._id === assigneeId);
+    const member = members.find((m) => m.id === assigneeId);
     return member?.name || '미배정';
   };
 
@@ -57,7 +57,7 @@ export function ActionList({ actions, isLoading, members, onSelect, onStatusChan
 
         return (
           <div
-            key={action._id}
+            key={action.id}
             onClick={() => onSelect(action)}
             className="bg-white rounded-lg border p-4 cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all"
           >
@@ -92,7 +92,7 @@ export function ActionList({ actions, isLoading, members, onSelect, onStatusChan
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) => {
                   e.stopPropagation();
-                  onStatusChange(action._id, e.target.value as ActionStatus);
+                  onStatusChange(action.id, e.target.value as ActionStatus);
                 }}
                 className="text-xs border rounded px-1.5 py-1 bg-white flex-shrink-0"
               >

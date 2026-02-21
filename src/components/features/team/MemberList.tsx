@@ -35,9 +35,9 @@ export function MemberList({
     <div className="bg-white rounded-xl border divide-y">
       {members.map((member) => (
         <MemberCard
-          key={member._id}
+          key={member.id}
           member={member}
-          isCurrentUser={member._id === currentUserId}
+          isCurrentUser={member.id === currentUserId}
           canManage={isAdmin}
           onRemove={onRemoveMember}
         />

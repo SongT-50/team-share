@@ -46,7 +46,7 @@ export function NotificationList({ notifications, onRead }: NotificationListProp
 
   const handleClick = (notification: Notification) => {
     if (!notification.isRead) {
-      onRead(notification._id);
+      onRead(notification.id);
     }
     if (notification.link) {
       router.push(notification.link);
@@ -57,7 +57,7 @@ export function NotificationList({ notifications, onRead }: NotificationListProp
     <ul className="divide-y">
       {notifications.map((n) => (
         <li
-          key={n._id}
+          key={n.id}
           onClick={() => handleClick(n)}
           className={`flex items-start gap-3 p-4 cursor-pointer transition-colors ${
             n.isRead

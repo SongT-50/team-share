@@ -29,8 +29,8 @@ export function TeamCreateForm({ onCreated }: TeamCreateFormProps) {
       const team = (await bkend.collection('teams').create({
         name: name.trim(),
         description: description.trim(),
-        adminId: user._id,
-        memberIds: [user._id],
+        adminId: user.id,
+        memberIds: [user.id],
         inviteCode,
       })) as Team;
 

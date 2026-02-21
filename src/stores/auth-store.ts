@@ -23,12 +23,24 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         set({ isLoading: true });
         try {
-          const { user, token } = (await bkend.auth.login({
+          const { accessToken, refreshToken } = (await bkend.auth.login({
             email,
             password,
           })) as AuthResponse;
-          localStorage.setItem('auth-token', token);
-          set({ user, token, isLoading: false });
+          localStorage.setItem('auth-token', accessToken);
+          localStorage.setItem('refresh-token', refreshToken);
+
+          // Fetch user profile
+          const me = (await bkend.auth.me()) as Record<string, unknown>;
+          const user: User = {
+            id: (me.id as string) || '',
+            email: (me.email as string) || '',
+            name: (me.name as string) || (me.nickname as string) || '',
+            role: me.role === 'admin' ? 'admin' : 'member',
+            createdAt: (me.createdAt as string) || '',
+            updatedAt: (me.updatedAt as string) || '',
+          };
+          set({ user, token: accessToken, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -38,13 +50,25 @@ export const useAuthStore = create<AuthState>()(
       register: async (email, password, name) => {
         set({ isLoading: true });
         try {
-          const { user, token } = (await bkend.auth.register({
+          const { accessToken, refreshToken } = (await bkend.auth.register({
             email,
             password,
             name,
           })) as AuthResponse;
-          localStorage.setItem('auth-token', token);
-          set({ user, token, isLoading: false });
+          localStorage.setItem('auth-token', accessToken);
+          localStorage.setItem('refresh-token', refreshToken);
+
+          // Fetch user profile
+          const me = (await bkend.auth.me()) as Record<string, unknown>;
+          const user: User = {
+            id: (me.id as string) || '',
+            email: (me.email as string) || '',
+            name: (me.name as string) || (me.nickname as string) || '',
+            role: me.role === 'admin' ? 'admin' : 'member',
+            createdAt: (me.createdAt as string) || '',
+            updatedAt: (me.updatedAt as string) || '',
+          };
+          set({ user, token: accessToken, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;

@@ -20,7 +20,7 @@ function nextStatus(current: ActionStatus): ActionStatus {
 
 function getMemberName(assigneeId: string | undefined, members: TeamMember[]): string {
   if (!assigneeId) return '미배정';
-  const member = members.find((m) => m._id === assigneeId);
+  const member = members.find((m) => m.id === assigneeId);
   return member?.name || '미배정';
 }
 
@@ -64,9 +64,9 @@ export function TodoList({ todos, members, onToggle }: TodoListProps) {
         {activeTodos.map((todo) => {
           const { icon, color } = statusIcon[todo.status];
           return (
-            <li key={todo._id} className="flex items-start gap-3 p-3 rounded-lg border">
+            <li key={todo.id} className="flex items-start gap-3 p-3 rounded-lg border">
               <button
-                onClick={() => onToggle(todo._id, nextStatus(todo.status))}
+                onClick={() => onToggle(todo.id, nextStatus(todo.status))}
                 className={`mt-0.5 text-lg flex-shrink-0 transition-colors ${color}`}
                 title={`상태: ${todo.status}`}
               >

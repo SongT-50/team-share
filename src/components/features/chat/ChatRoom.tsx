@@ -129,7 +129,7 @@ export function ChatRoom({ teamId, searchQuery }: ChatRoomProps) {
               !prev || !isSameDay(prev.createdAt, msg.createdAt);
 
             return (
-              <div key={msg._id}>
+              <div key={msg.id}>
                 {showDateSeparator && (
                   <div className="flex items-center gap-3 my-4">
                     <div className="flex-1 h-px bg-gray-200" />
@@ -141,7 +141,7 @@ export function ChatRoom({ teamId, searchQuery }: ChatRoomProps) {
                 )}
                 <MessageBubble
                   message={msg}
-                  isMine={msg.senderId === user?._id}
+                  isMine={msg.senderId === user?.id}
                   teamId={teamId}
                   onDelete={handleDelete}
                   isDeleting={isDeleting}
@@ -171,16 +171,16 @@ export function ChatRoom({ teamId, searchQuery }: ChatRoomProps) {
           const result = await sendMessage(content, type, fileUrl);
           if (result && user) {
             members
-              .filter((m) => m._id !== user._id)
+              .filter((m) => m.id !== user.id)
               .forEach((m) => {
                 createNotification({
                   teamId,
-                  recipientId: m._id,
+                  recipientId: m.id,
                   type: 'chat',
                   title: `${user.name}님이 메시지를 보냈습니다`,
                   body: content.length > 50 ? content.slice(0, 50) + '...' : content,
                   link: '/chat',
-                  sourceId: result._id,
+                  sourceId: result.id,
                 });
               });
           }

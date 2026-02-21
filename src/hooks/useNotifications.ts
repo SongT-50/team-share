@@ -15,12 +15,11 @@ export function useNotifications(teamId: string) {
   const loadNotifications = useCallback(async () => {
     if (!teamId || !user) return;
     try {
-      const data = (await bkend.collection('notifications').find({
-        teamId,
-        recipientId: user._id,
-        sort: '-createdAt',
-      })) as Notification[];
-      setNotifications(Array.isArray(data) ? data : []);
+      const data = (await bkend.collection('notifications').find({})) as Notification[];
+      const all = Array.isArray(data) ? data : [];
+      setNotifications(
+        all.filter((n) => n.teamId === teamId && n.recipientId === user.id)
+      );
       failCountRef.current = 0;
       setIsError(false);
     } catch {
@@ -54,7 +53,7 @@ export function useNotifications(teamId: string) {
 
   const markAsRead = useCallback(async (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
     try {
       await bkend.collection('notifications').update(id, { isRead: true });
@@ -69,7 +68,7 @@ export function useNotifications(teamId: string) {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     await Promise.allSettled(
       unread.map((n) =>
-        bkend.collection('notifications').update(n._id, { isRead: true })
+        bkend.collection('notifications').update(n.id, { isRead: true })
       )
     );
   }, [notifications]);

@@ -13,8 +13,9 @@ export function useFiles(teamId: string) {
   } = useQuery({
     queryKey: ['files', teamId],
     queryFn: async () => {
-      const result = await bkend.collection('shared-files').find({ teamId });
-      return Array.isArray(result) ? (result as SharedFile[]) : [];
+      const result = await bkend.collection('files').find({});
+      const all = Array.isArray(result) ? (result as SharedFile[]) : [];
+      return all.filter((f) => f.teamId === teamId);
     },
     enabled: !!teamId,
   });
@@ -25,7 +26,7 @@ export function useFiles(teamId: string) {
 
   const deleteMutation = useMutation({
     mutationFn: async (fileId: string) => {
-      await bkend.collection('shared-files').delete(fileId);
+      await bkend.collection('files').delete(fileId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files', teamId] });
@@ -41,7 +42,7 @@ export function useFiles(teamId: string) {
       data: Partial<SharedFile>;
     }) => {
       return (await bkend
-        .collection('shared-files')
+        .collection('files')
         .update(fileId, data as Record<string, unknown>)) as SharedFile;
     },
     onSuccess: () => {

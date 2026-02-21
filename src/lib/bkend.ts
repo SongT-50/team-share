@@ -1,11 +1,9 @@
 // bkend.ai client setup
-// TODO: Replace with actual @bkend/client when configured
-// For now, this is a placeholder that will be connected to bkend.ai
+// API Docs: https://bkend.gitbook.io/bkend-docs
 
 const BKEND_API_KEY = process.env.NEXT_PUBLIC_BKEND_API_KEY;
-const BKEND_PROJECT_ID = process.env.NEXT_PUBLIC_BKEND_PROJECT_ID;
 
-const BASE_URL = `https://api.bkend.ai/v1/projects/${BKEND_PROJECT_ID}`;
+const BASE_URL = 'https://api-client.bkend.ai';
 
 async function request<T>(
   path: string,
@@ -28,52 +26,81 @@ async function request<T>(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || 'Request failed');
+    const details = error.error?.details?.fieldErrors;
+    if (details) {
+      const messages = Object.entries(details)
+        .map(([field, errs]) => `${field}: ${(errs as string[]).join(', ')}`)
+        .join('; ');
+      throw new Error(messages);
+    }
+    throw new Error(error.error?.message || error.message || 'Request failed');
   }
 
-  return res.json();
+  const json = await res.json();
+  return json.data !== undefined ? json.data : json;
 }
 
 export const bkend = {
   auth: {
     login: (data: { email: string; password: string }) =>
-      request('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+      request('/v1/auth/email/signin', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, method: 'password' }),
+      }),
     register: (data: { email: string; password: string; name: string }) =>
-      request('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
+      request('/v1/auth/email/signup', {
+        method: 'POST',
+        body: JSON.stringify({ ...data, method: 'password' }),
+      }),
+    me: () => request('/v1/auth/me'),
     logout: () => {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-token');
+        localStorage.removeItem('refresh-token');
       }
     },
   },
   collection: (name: string) => ({
-    find: (query?: Record<string, unknown>) =>
-      request(`/collections/${name}?${new URLSearchParams(query as Record<string, string>).toString()}`),
+    find: async (query?: Record<string, unknown>) => {
+      const params = new URLSearchParams();
+      if (query) {
+        Object.entries(query).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            params.set(key, String(value));
+          }
+        });
+      }
+      const qs = params.toString();
+      const result = await request<unknown>(`/v1/data/${name}${qs ? `?${qs}` : ''}`);
+      // bkend.ai returns { items: [...], pagination: {...} }
+      if (result && typeof result === 'object' && 'items' in result) {
+        return (result as { items: unknown[] }).items;
+      }
+      return result;
+    },
     findById: (id: string) =>
-      request(`/collections/${name}/${id}`),
+      request(`/v1/data/${name}/${id}`),
     create: (data: Record<string, unknown>) =>
-      request(`/collections/${name}`, { method: 'POST', body: JSON.stringify(data) }),
+      request(`/v1/data/${name}`, { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: Record<string, unknown>) =>
-      request(`/collections/${name}/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+      request(`/v1/data/${name}/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
     delete: (id: string) =>
-      request(`/collections/${name}/${id}`, { method: 'DELETE' }),
+      request(`/v1/data/${name}/${id}`, { method: 'DELETE' }),
   }),
   upload: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    const token =
-      typeof window !== 'undefined'
-        ? localStorage.getItem('auth-token')
-        : null;
-    const res = await fetch(`${BASE_URL}/files/upload`, {
-      method: 'POST',
-      headers: {
-        'X-API-Key': BKEND_API_KEY || '',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: formData,
-    });
-    if (!res.ok) throw new Error('Upload failed');
-    return res.json();
+    formData.append('upload_preset', 'my_default');
+
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/dsohxszgq/auto/upload',
+      { method: 'POST', body: formData }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || '파일 업로드에 실패했습니다');
+    }
+    const data = await res.json();
+    return { url: data.secure_url };
   },
 };

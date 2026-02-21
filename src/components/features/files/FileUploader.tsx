@@ -77,9 +77,9 @@ export function FileUploader({ teamId, onUploaded }: FileUploaderProps) {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const sharedFile = (await bkend.collection('shared-files').create({
+      const sharedFile = (await bkend.collection('files').create({
         teamId,
-        uploaderId: user._id,
+        uploaderId: user.id,
         uploaderName: user.name,
         title: title || selectedFile.name,
         fileUrl: uploadResult.url,
@@ -87,6 +87,11 @@ export function FileUploader({ teamId, onUploaded }: FileUploaderProps) {
         fileName: selectedFile.name,
         fileSize: selectedFile.size,
         tags: parsedTags,
+        // bkend.ai files table required fields
+        s3Key: `uploads/${Date.now()}-${selectedFile.name}`,
+        originalName: selectedFile.name,
+        mimeType: selectedFile.type || 'application/octet-stream',
+        size: selectedFile.size,
       })) as SharedFile;
 
       toast.success('파일이 업로드되었습니다');

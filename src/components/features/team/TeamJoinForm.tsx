@@ -35,14 +35,14 @@ export function TeamJoinForm({ onJoined }: TeamJoinFormProps) {
 
       const team = teams[0];
 
-      if (team.memberIds.includes(user._id)) {
+      if (team.memberIds.includes(user.id)) {
         toast.info('이미 이 팀에 소속되어 있습니다');
         onJoined(team);
         return;
       }
 
-      const updatedTeam = (await bkend.collection('teams').update(team._id, {
-        memberIds: [...team.memberIds, user._id],
+      const updatedTeam = (await bkend.collection('teams').update(team.id, {
+        memberIds: [...team.memberIds, user.id],
       })) as Team;
 
       toast.success(`"${team.name}" 팀에 합류했습니다!`);

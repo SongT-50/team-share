@@ -95,7 +95,7 @@ export default function ActionsPage() {
   const sorted = sortActions(statusFiltered, sortBy);
 
   const canDeleteAction = (action: ActionItem) =>
-    action.creatorId === user?._id || isAdmin;
+    action.creatorId === user?.id || isAdmin;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

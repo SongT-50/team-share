@@ -8,15 +8,16 @@ export function useActions(teamId: string) {
   const { data: actions = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['actions', teamId],
     queryFn: async () => {
-      const result = await bkend.collection('action-items').find({ teamId });
-      return Array.isArray(result) ? (result as ActionItem[]) : [];
+      const result = await bkend.collection('action_items').find({});
+      const all = Array.isArray(result) ? (result as ActionItem[]) : [];
+      return all.filter((a) => a.teamId === teamId);
     },
     enabled: !!teamId,
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: ActionStatus }) => {
-      return bkend.collection('action-items').update(id, { status });
+      return bkend.collection('action_items').update(id, { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['actions', teamId] });
@@ -25,7 +26,7 @@ export function useActions(teamId: string) {
 
   const updateActionMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<ActionItem> }) => {
-      return bkend.collection('action-items').update(id, data as Record<string, unknown>);
+      return bkend.collection('action_items').update(id, data as Record<string, unknown>);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['actions', teamId] });
@@ -34,7 +35,7 @@ export function useActions(teamId: string) {
 
   const deleteActionMutation = useMutation({
     mutationFn: async (id: string) => {
-      return bkend.collection('action-items').delete(id);
+      return bkend.collection('action_items').delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['actions', teamId] });

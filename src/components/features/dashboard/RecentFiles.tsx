@@ -33,7 +33,7 @@ export function RecentFiles({ files }: RecentFilesProps) {
     <div>
       <ul className="space-y-2">
         {recent.map((file) => (
-          <li key={file._id}>
+          <li key={file.id}>
             <a
               href={file.fileUrl}
               target="_blank"

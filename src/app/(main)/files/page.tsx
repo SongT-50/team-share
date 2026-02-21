@@ -65,11 +65,11 @@ export default function FilesPage() {
           refresh();
           if (user) {
             members
-              .filter((m) => m._id !== user._id)
+              .filter((m) => m.id !== user.id)
               .forEach((m) => {
                 createNotification({
                   teamId,
-                  recipientId: m._id,
+                  recipientId: m.id,
                   type: 'file',
                   title: `${user.name}님이 파일을 업로드했습니다`,
                   body: '새 파일이 공유되었습니다',
@@ -118,7 +118,7 @@ export default function FilesPage() {
           isLoading={filesLoading}
           searchQuery={searchQuery}
           sortBy={sortBy}
-          currentUserId={user?._id || ''}
+          currentUserId={user?.id || ''}
           isAdmin={isAdmin}
           onUpdate={updateFile}
           onDelete={deleteFile}

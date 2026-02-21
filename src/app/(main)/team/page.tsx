@@ -125,12 +125,30 @@ export default function TeamPage() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">{currentTeam.name}</h1>
-        {currentTeam.description && (
-          <p className="text-sm text-gray-500 mt-1">{currentTeam.description}</p>
-        )}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">{currentTeam.name}</h1>
+          {currentTeam.description && (
+            <p className="text-sm text-gray-500 mt-1">{currentTeam.description}</p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => setShowCreateTeam(true)}>
+            + 팀 추가
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setShowJoinTeam(true)}>
+            합류
+          </Button>
+        </div>
       </div>
+
+      {/* Create / Join Modals */}
+      <Modal isOpen={showCreateTeam} onClose={() => setShowCreateTeam(false)} title="새 팀 만들기">
+        <TeamCreateForm onCreated={() => { setShowCreateTeam(false); window.location.reload(); }} />
+      </Modal>
+      <Modal isOpen={showJoinTeam} onClose={() => setShowJoinTeam(false)} title="팀 합류">
+        <TeamJoinForm onJoined={() => { setShowJoinTeam(false); window.location.reload(); }} />
+      </Modal>
 
       {/* Top row: Invite Code + Team Settings */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -169,7 +187,7 @@ export default function TeamPage() {
         ) : (
           <MemberList
             members={members}
-            currentUserId={user?._id || ''}
+            currentUserId={user?.id || ''}
             isAdmin={isAdmin}
             isLoading={isMembersLoading}
             onRemoveMember={requestRemoveMember}

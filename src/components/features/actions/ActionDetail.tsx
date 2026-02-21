@@ -70,7 +70,7 @@ export function ActionDetail({
       .filter(Boolean);
 
     try {
-      await onUpdate(action._id, {
+      await onUpdate(action.id, {
         title: editTitle.trim() || action.title,
         content: editContent,
         tags: parsedTags,
@@ -88,12 +88,12 @@ export function ActionDetail({
           title: `${user.name}님이 액션을 할당했습니다`,
           body: editTitle.trim() || action.title,
           link: '/actions',
-          sourceId: action._id,
+          sourceId: action.id,
         });
       }
 
       // Notification: status changed
-      if (editStatus !== action.status && action.creatorId !== user?._id && user && teamId) {
+      if (editStatus !== action.status && action.creatorId !== user?.id && user && teamId) {
         const statusLabels: Record<string, string> = { open: '열림', in_progress: '진행중', done: '완료' };
         createNotification({
           teamId,
@@ -102,7 +102,7 @@ export function ActionDetail({
           title: '액션 상태가 변경되었습니다',
           body: `${editTitle.trim() || action.title} → ${statusLabels[editStatus] || editStatus}`,
           link: '/actions',
-          sourceId: action._id,
+          sourceId: action.id,
         });
       }
 
@@ -115,7 +115,7 @@ export function ActionDetail({
 
   const handleDelete = async () => {
     try {
-      await onDelete(action._id);
+      await onDelete(action.id);
       toast.success('삭제되었습니다');
       onClose();
     } catch {
@@ -183,7 +183,7 @@ export function ActionDetail({
           >
             <option value="">미배정</option>
             {members.map((member) => (
-              <option key={member._id} value={member._id}>
+              <option key={member.id} value={member.id}>
                 {member.name}{member.isAdmin ? ' (관리자)' : ''}
               </option>
             ))}

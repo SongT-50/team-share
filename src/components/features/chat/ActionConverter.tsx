@@ -31,10 +31,10 @@ export function ActionConverter({ message, teamId, onClose }: ActionConverterPro
 
     setIsCreating(true);
     try {
-      await bkend.collection('action-items').create({
+      await bkend.collection('action_items').create({
         teamId,
-        sourceMessageId: message._id,
-        creatorId: user._id,
+        sourceMessageId: message.id,
+        creatorId: user.id,
         actionType: selectedType,
         title: title.trim() || message.content.slice(0, 50),
         content: message.content,

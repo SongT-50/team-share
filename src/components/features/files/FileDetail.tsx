@@ -41,7 +41,7 @@ export function FileDetail({
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean);
-      await onUpdate(file._id, {
+      await onUpdate(file.id, {
         title: editTitle,
         description: editDescription,
         tags: parsedTags,
@@ -56,7 +56,7 @@ export function FileDetail({
 
   const handleDelete = async () => {
     try {
-      await onDelete(file._id);
+      await onDelete(file.id);
       toast.success('파일이 삭제되었습니다');
       onClose();
     } catch (error) {

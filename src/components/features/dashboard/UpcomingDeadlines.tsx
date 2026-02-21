@@ -30,7 +30,7 @@ const typeIcons: Record<string, string> = {
 
 function getMemberName(assigneeId: string | undefined, members: TeamMember[]): string {
   if (!assigneeId) return '미배정';
-  const member = members.find((m) => m._id === assigneeId);
+  const member = members.find((m) => m.id === assigneeId);
   return member?.name || '미배정';
 }
 
@@ -63,7 +63,7 @@ export function UpcomingDeadlines({ actions, members }: UpcomingDeadlinesProps) 
       <ul className="space-y-2">
         {upcoming.map((action) => (
           <li
-            key={action._id}
+            key={action.id}
             className="flex items-center gap-3 p-3 rounded-lg border"
           >
             <span className="text-lg">{typeIcons[action.actionType] || '📌'}</span>

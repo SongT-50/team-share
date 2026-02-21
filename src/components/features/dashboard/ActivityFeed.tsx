@@ -53,7 +53,7 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({ messages, files, actions }: ActivityFeedProps) {
   const chatFeed: FeedItem[] = messages.map((msg) => ({
-    id: `chat-${msg._id}`,
+    id: `chat-${msg.id}`,
     type: 'chat',
     title: msg.senderName,
     description: msg.content.length > 30 ? msg.content.slice(0, 30) + '...' : msg.content,
@@ -62,7 +62,7 @@ export function ActivityFeed({ messages, files, actions }: ActivityFeedProps) {
   }));
 
   const fileFeed: FeedItem[] = files.map((file) => ({
-    id: `file-${file._id}`,
+    id: `file-${file.id}`,
     type: 'file',
     title: file.title,
     description: `${file.uploaderName} 업로드`,
@@ -71,7 +71,7 @@ export function ActivityFeed({ messages, files, actions }: ActivityFeedProps) {
   }));
 
   const actionFeed: FeedItem[] = actions.map((action) => ({
-    id: `action-${action._id}`,
+    id: `action-${action.id}`,
     type: 'action',
     title: action.title,
     description: `${actionTypeIcons[action.actionType] || ''} ${statusLabels[action.status] || action.status}`,

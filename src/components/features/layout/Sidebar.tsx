@@ -23,7 +23,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { teamId } = useTeam();
+  const { teams, currentTeam, teamId, switchTeam } = useTeam();
   const { unreadCount } = useChat(teamId);
   const { unreadCount: notificationUnreadCount } = useNotifications(teamId);
 
@@ -31,6 +31,20 @@ export function Sidebar() {
     <aside className="hidden md:flex flex-col w-60 bg-white border-r h-screen sticky top-0">
       <div className="p-4 border-b">
         <h1 className="text-xl font-bold text-blue-600">Team Share</h1>
+        {teams.length > 1 && (
+          <select
+            value={currentTeam?.id || ''}
+            onChange={(e) => switchTeam(e.target.value)}
+            className="mt-2 w-full px-2 py-1.5 text-sm border rounded-lg bg-gray-50"
+          >
+            {teams.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+        )}
+        {teams.length === 1 && currentTeam && (
+          <p className="mt-1 text-xs text-gray-500 truncate">{currentTeam.name}</p>
+        )}
       </div>
 
       <nav className="flex-1 p-3 space-y-1">

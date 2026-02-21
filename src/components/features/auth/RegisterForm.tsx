@@ -68,7 +68,7 @@ export function RegisterForm() {
         <Input
           label="비밀번호"
           type="password"
-          placeholder="8자 이상"
+          placeholder="대문자, 숫자, 특수문자 포함 8자 이상"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required

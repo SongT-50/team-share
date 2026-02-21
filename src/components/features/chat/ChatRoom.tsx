@@ -108,7 +108,7 @@ export function ChatRoom({ teamId, searchQuery }: ChatRoomProps) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] md:h-screen">
+    <div className="flex flex-col flex-1 min-h-0">
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}

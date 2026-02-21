@@ -52,10 +52,8 @@ export function ChatRoom({ teamId, searchQuery }: ChatRoomProps) {
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
-    if (!showScrollButton) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, showScrollButton]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length]);
 
   // Mark as read on mount and when new messages arrive
   useEffect(() => {

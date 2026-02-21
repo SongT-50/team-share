@@ -16,7 +16,10 @@ export function useChat(teamId: string) {
     try {
       const data = (await bkend.collection('chat_messages').find({})) as ChatMessage[];
       const all = Array.isArray(data) ? data : [];
-      setMessages(all.filter((m) => m.teamId === teamId));
+      const filtered = all
+        .filter((m) => m.teamId === teamId)
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      setMessages(filtered);
       failCountRef.current = 0;
       setIsError(false);
     } catch {

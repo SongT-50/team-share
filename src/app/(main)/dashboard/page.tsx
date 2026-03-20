@@ -19,7 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
 
 export default function DashboardPage() {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const { currentTeam, teamId, members, isLoading: teamLoading } = useTeam();
   const { files } = useFiles(teamId);
   const { actions, todos, decisions, ideas, doneTodos, todoProgress, updateStatus } = useActions(teamId);
@@ -34,14 +34,12 @@ export default function DashboardPage() {
     return (
       <div className="p-6 max-w-lg mx-auto">
         <h1 className="text-2xl font-bold mb-2">환영합니다, {user?.name}님!</h1>
-        <p className="text-gray-600 mb-8">{isAdmin ? '시작하려면 팀을 만들거나 초대 코드로 합류하세요.' : '초대 코드로 팀에 합류하세요.'}</p>
+        <p className="text-gray-600 mb-8">시작하려면 팀을 만들거나 초대 코드로 합류하세요.</p>
 
         <div className="space-y-3">
-          {isAdmin && (
-            <Button className="w-full" size="lg" onClick={() => setShowCreateTeam(true)}>
-              새 팀 만들기
-            </Button>
-          )}
+          <Button className="w-full" size="lg" onClick={() => setShowCreateTeam(true)}>
+            새 팀 만들기
+          </Button>
           <Button className="w-full" size="lg" variant="secondary" onClick={() => setShowJoinTeam(true)}>
             초대 코드로 합류
           </Button>

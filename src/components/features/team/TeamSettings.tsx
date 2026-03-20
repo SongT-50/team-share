@@ -30,7 +30,9 @@ export function TeamSettings({
   const [name, setName] = useState(team.name);
   const [description, setDescription] = useState(team.description || '');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [showLeaveFinal, setShowLeaveFinal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteFinal, setShowDeleteFinal] = useState(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState('');
 
   const hasChanges = name !== team.name || description !== (team.description || '');
@@ -44,13 +46,23 @@ export function TeamSettings({
     }
   };
 
+  const handleLeaveStep2 = () => {
+    setShowLeaveConfirm(false);
+    setShowLeaveFinal(true);
+  };
+
   const handleLeave = async () => {
     try {
       await onLeaveTeam();
     } catch {
       // error handled by parent
     }
-    setShowLeaveConfirm(false);
+    setShowLeaveFinal(false);
+  };
+
+  const handleDeleteStep2 = () => {
+    setShowDeleteConfirm(false);
+    setShowDeleteFinal(true);
   };
 
   const handleDelete = async () => {
@@ -59,7 +71,7 @@ export function TeamSettings({
     } catch {
       // error handled by parent
     }
-    setShowDeleteConfirm(false);
+    setShowDeleteFinal(false);
   };
 
   return (
@@ -130,7 +142,7 @@ export function TeamSettings({
         </div>
       </div>
 
-      {/* Leave Confirm Modal */}
+      {/* Leave Confirm Modal — 1단계 */}
       <Modal
         isOpen={showLeaveConfirm}
         onClose={() => setShowLeaveConfirm(false)}
@@ -145,16 +157,35 @@ export function TeamSettings({
           <Button variant="secondary" size="sm" onClick={() => setShowLeaveConfirm(false)}>
             취소
           </Button>
-          <Button variant="danger" size="sm" onClick={handleLeave} isLoading={isLeaving}>
+          <Button variant="danger" size="sm" onClick={handleLeaveStep2}>
             나가기
           </Button>
         </div>
       </Modal>
 
-      {/* Delete Confirm Modal */}
+      {/* Leave Confirm Modal — 2단계 (최종 확인) */}
+      <Modal
+        isOpen={showLeaveFinal}
+        onClose={() => setShowLeaveFinal(false)}
+        title="⚠️ 최종 확인"
+      >
+        <p className="text-sm text-red-600 font-medium mb-4">
+          정말로 &quot;{team.name}&quot; 팀에서 나가시겠습니까?
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button variant="secondary" size="sm" onClick={() => setShowLeaveFinal(false)}>
+            취소
+          </Button>
+          <Button variant="danger" size="sm" onClick={handleLeave} isLoading={isLeaving}>
+            정말 나가기
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Delete Confirm Modal — 1단계 (팀 이름 입력) */}
       <Modal
         isOpen={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
+        onClose={() => { setShowDeleteConfirm(false); setDeleteConfirmName(''); }}
         title="팀 삭제"
       >
         <p className="text-sm text-gray-600 mb-2">
@@ -173,21 +204,41 @@ export function TeamSettings({
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => {
-              setShowDeleteConfirm(false);
-              setDeleteConfirmName('');
-            }}
+            onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmName(''); }}
           >
             취소
           </Button>
           <Button
             variant="danger"
             size="sm"
-            onClick={handleDelete}
+            onClick={handleDeleteStep2}
             disabled={deleteConfirmName !== team.name}
-            isLoading={isDeleting}
           >
-            삭제하기
+            다음
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Delete Confirm Modal — 2단계 (최종 확인) */}
+      <Modal
+        isOpen={showDeleteFinal}
+        onClose={() => setShowDeleteFinal(false)}
+        title="⚠️ 최종 확인"
+      >
+        <p className="text-sm text-red-600 font-bold mb-2">
+          정말로 &quot;{team.name}&quot; 팀을 삭제하시겠습니까?
+        </p>
+        <p className="text-sm text-gray-600 mb-4">
+          모든 채팅, 파일, 액션, 알림이 영구 삭제됩니다.
+          <br />
+          이 작업은 되돌릴 수 없습니다.
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button variant="secondary" size="sm" onClick={() => setShowDeleteFinal(false)}>
+            취소
+          </Button>
+          <Button variant="danger" size="sm" onClick={handleDelete} isLoading={isDeleting}>
+            영구 삭제
           </Button>
         </div>
       </Modal>

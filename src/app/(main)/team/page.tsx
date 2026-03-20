@@ -14,7 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
 
 export default function TeamPage() {
-  const { user } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
   const {
     currentTeam,
     isLoading,
@@ -38,6 +38,7 @@ export default function TeamPage() {
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [showJoinTeam, setShowJoinTeam] = useState(false);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
+  const [removingFinal, setRemovingFinal] = useState(false);
 
   // 팀의 adminId로 관리자 판단 (bkend.ai 시스템 role 대신)
   const isAdmin = !!currentTeam && currentTeam.adminId === user?.id;
@@ -49,11 +50,13 @@ export default function TeamPage() {
     return (
       <div className="p-6 max-w-lg mx-auto">
         <h1 className="text-2xl font-bold mb-2">팀 관리</h1>
-        <p className="text-gray-600 mb-8">아직 팀이 없습니다. 팀을 만들거나 합류하세요.</p>
+        <p className="text-gray-600 mb-8">{isSuperAdmin ? '팀을 만들거나 합류하세요.' : '초대 코드로 팀에 합류하세요.'}</p>
         <div className="space-y-3">
-          <Button className="w-full" size="lg" onClick={() => setShowCreateTeam(true)}>
-            새 팀 만들기
-          </Button>
+          {isSuperAdmin && (
+            <Button className="w-full" size="lg" onClick={() => setShowCreateTeam(true)}>
+              새 팀 만들기
+            </Button>
+          )}
           <Button className="w-full" size="lg" variant="secondary" onClick={() => setShowJoinTeam(true)}>
             초대 코드로 합류
           </Button>
@@ -73,7 +76,12 @@ export default function TeamPage() {
     setRemovingMemberId(memberId);
   };
 
-  // Step 2: Confirm and call API
+  // Step 2: 1단계 확인 → 2단계로 이동
+  const confirmRemoveStep2 = () => {
+    setRemovingFinal(true);
+  };
+
+  // Step 3: 최종 확인 후 API 호출
   const confirmRemoveMember = async () => {
     if (!removingMemberId) return;
     try {
@@ -84,6 +92,7 @@ export default function TeamPage() {
       toast.error(message);
     }
     setRemovingMemberId(null);
+    setRemovingFinal(false);
   };
 
   const handleUpdateTeam = async (data: { name: string; description: string }) => {
@@ -136,9 +145,11 @@ export default function TeamPage() {
           )}
         </div>
         <div className="flex gap-2">
-          <Button size="sm" onClick={() => setShowCreateTeam(true)}>
-            + 팀 추가
-          </Button>
+          {isSuperAdmin && (
+            <Button size="sm" onClick={() => setShowCreateTeam(true)}>
+              + 팀 추가
+            </Button>
+          )}
           <Button size="sm" variant="secondary" onClick={() => setShowJoinTeam(true)}>
             합류
           </Button>
@@ -212,10 +223,10 @@ export default function TeamPage() {
         />
       )}
 
-      {/* Remove Member Confirm Modal */}
-      {removingMemberId && (
+      {/* Remove Member Confirm Modal — 1단계 */}
+      {removingMemberId && !removingFinal && (
         <Modal
-          isOpen={!!removingMemberId}
+          isOpen={!!removingMemberId && !removingFinal}
           onClose={() => setRemovingMemberId(null)}
           title="멤버 추방"
         >
@@ -228,13 +239,34 @@ export default function TeamPage() {
             <Button variant="secondary" size="sm" onClick={() => setRemovingMemberId(null)}>
               취소
             </Button>
+            <Button variant="danger" size="sm" onClick={confirmRemoveStep2}>
+              추방하기
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Remove Member Confirm Modal — 2단계 (최종 확인) */}
+      {removingMemberId && removingFinal && (
+        <Modal
+          isOpen={!!removingMemberId && removingFinal}
+          onClose={() => { setRemovingMemberId(null); setRemovingFinal(false); }}
+          title="⚠️ 최종 확인"
+        >
+          <p className="text-sm text-red-600 font-medium mb-4">
+            정말로 이 멤버를 추방하시겠습니까?
+          </p>
+          <div className="flex gap-2 justify-end">
+            <Button variant="secondary" size="sm" onClick={() => { setRemovingMemberId(null); setRemovingFinal(false); }}>
+              취소
+            </Button>
             <Button
               variant="danger"
               size="sm"
               onClick={confirmRemoveMember}
               isLoading={isRemoving}
             >
-              추방하기
+              정말 추방하기
             </Button>
           </div>
         </Modal>

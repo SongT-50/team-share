@@ -21,13 +21,12 @@ interface FileListProps {
   isDeleting: boolean;
 }
 
-type FileFilter = 'all' | 'image' | 'document' | 'video' | 'other';
+type FileFilter = 'all' | 'image' | 'document' | 'other';
 
 const filterLabels: Record<FileFilter, string> = {
   all: '전체',
   image: '이미지',
   document: '문서',
-  video: '동영상',
   other: '기타',
 };
 

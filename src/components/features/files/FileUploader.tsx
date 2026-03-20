@@ -25,7 +25,14 @@ export function FileUploader({ teamId, onUploaded }: FileUploaderProps) {
   const { user } = useAuth();
   const toast = useToast();
 
+  const BLOCKED_VIDEO_EXTS = ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'flv', 'webm'];
+
   const validateAndSetFile = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    if (BLOCKED_VIDEO_EXTS.includes(ext) || file.type.startsWith('video/')) {
+      toast.error('동영상 파일은 업로드할 수 없습니다');
+      return;
+    }
     if (file.size > MAX_FILE_SIZE) {
       toast.error(`파일 크기는 ${formatFileSize(MAX_FILE_SIZE)} 이하여야 합니다`);
       return;
@@ -132,7 +139,7 @@ export function FileUploader({ teamId, onUploaded }: FileUploaderProps) {
         type="file"
         onChange={handleFileSelect}
         className="hidden"
-        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.mp4,.avi,.mov"
+        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.csv,.hwp"
       />
 
       {!selectedFile ? (

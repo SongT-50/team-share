@@ -12,7 +12,6 @@ interface FeedItem {
 const fileIcons: Record<string, string> = {
   image: '🖼️',
   document: '📄',
-  video: '🎬',
   other: '📎',
 };
 

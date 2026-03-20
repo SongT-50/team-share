@@ -5,7 +5,6 @@ import type { SharedFile } from '@/types';
 const fileIcons: Record<string, string> = {
   image: '🖼️',
   document: '📄',
-  video: '🎬',
   other: '📎',
 };
 

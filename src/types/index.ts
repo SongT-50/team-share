@@ -34,7 +34,7 @@ export interface SharedFile extends BaseDocument {
   title: string;
   description?: string;
   fileUrl: string;
-  fileType: 'image' | 'document' | 'video' | 'other';
+  fileType: 'image' | 'document' | 'other';
   fileName: string;
   fileSize: number;
   tags: string[];

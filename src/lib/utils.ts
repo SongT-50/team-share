@@ -23,10 +23,9 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-export function getFileType(fileName: string): 'image' | 'document' | 'video' | 'other' {
+export function getFileType(fileName: string): 'image' | 'document' | 'other' {
   const ext = fileName.split('.').pop()?.toLowerCase() || '';
   if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return 'image';
-  if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'].includes(ext)) return 'document';
-  if (['mp4', 'avi', 'mov', 'wmv'].includes(ext)) return 'video';
+  if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'md', 'csv', 'hwp'].includes(ext)) return 'document';
   return 'other';
 }

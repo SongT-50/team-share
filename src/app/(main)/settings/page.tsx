@@ -10,7 +10,7 @@ import { useNotificationStore } from '@/stores/notification-store';
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
-  const { currentTeam } = useTeam();
+  const { currentTeam, members } = useTeam();
   const { settings, toggleSetting } = useNotificationStore();
   const [name, setName] = useState(user?.name || '');
 
@@ -56,7 +56,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">팀원 수</span>
-                <span>{currentTeam.memberIds.length}명</span>
+                <span>{members.length}명</span>
               </div>
             </div>
           </section>
